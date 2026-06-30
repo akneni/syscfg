@@ -10,7 +10,7 @@ use crate::{cli::CliCommand, config::Config};
 
 mod cli;
 mod config;
-mod gitutils;
+mod git;
 mod globals;
 mod ss;
 mod utils;
@@ -36,7 +36,7 @@ fn mksnap(output: &Option<PathBuf>) -> Result<()> {
     fs::create_dir_all(&ss_path)
         .with_context(|| format!("failed to create snapshot directory {}", ss_path.display()))?;
 
-    gitutils::init(&ss_path)?;
+    git::init(&ss_path)?;
 
     let config_path = ss_path.join("SnapshotConfig.json");
     let config = serde_json::to_string_pretty(&Config::default())
@@ -44,7 +44,7 @@ fn mksnap(output: &Option<PathBuf>) -> Result<()> {
     fs::write(&config_path, format!("{config}\n"))
         .with_context(|| format!("failed to write config file {}", config_path.display()))?;
 
-    gitutils::commit(&ss_path, "Created Snapshot")?;
+    git::commit(&ss_path, "Created Snapshot")?;
 
     Ok(())
 }
@@ -66,8 +66,8 @@ fn save(output: &Option<PathBuf>) -> Result<()> {
 
     save_fonts(&ss_path)?;
 
-    if gitutils::has_changes(&ss_path)? {
-        gitutils::commit(&ss_path, "Saved Snapshot")?;
+    if git::has_changes(&ss_path)? {
+        git::commit(&ss_path, "Saved Snapshot")?;
     }
 
     Ok(())
