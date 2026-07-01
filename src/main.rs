@@ -33,8 +33,7 @@ fn main() {
 fn mksnap(output: &Option<PathBuf>) -> Result<()> {
     let ss_path = snapshot_path(output)?;
 
-    fs::create_dir_all(&ss_path)
-        .with_context(|| format!("failed to create snapshot directory {}", ss_path.display()))?;
+    utils::ensure_snapshot_dir(&ss_path)?;
 
     git::init(&ss_path)?;
 
@@ -51,6 +50,7 @@ fn mksnap(output: &Option<PathBuf>) -> Result<()> {
 
 fn save(output: &Option<PathBuf>) -> Result<()> {
     let ss_path = snapshot_path(output)?;
+    utils::ensure_snapshot_dir(&ss_path)?;
     let config = Config::read(&ss_path)?;
 
     if config.font != "*" {
@@ -75,6 +75,7 @@ fn save(output: &Option<PathBuf>) -> Result<()> {
 
 fn load(input: &Option<PathBuf>) -> Result<()> {
     let ss_path = snapshot_path(input)?;
+    utils::ensure_snapshot_dir(&ss_path)?;
     let config = Config::read(&ss_path)?;
 
     if config.font != "*" {
