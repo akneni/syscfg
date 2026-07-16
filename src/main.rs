@@ -85,8 +85,8 @@ fn load(input: &Option<PathBuf>) -> Result<()> {
     for name in &config.app_config {
         let src = ss::appconfig_ss_path(&ss_path, name);
         let dst = ss::appconfig_sys_path(name);
-        utils::copy_path(&src, &dst)
-            .with_context(|| format!("failed to load app config {name}"))?;
+        utils::copy_path(&src, &dst).unwrap();
+        // .with_context(|| format!("failed to load app config {name}"))?;
     }
 
     load_fonts(&ss_path)?;
@@ -99,8 +99,7 @@ fn snapshot_path(path: &Option<PathBuf>) -> Result<PathBuf> {
         Some(path) => Ok(path.clone()),
         None => Ok(env::home_dir()
             .context("failed to determine home directory")?
-            .join(".config")
-            .join("syscfg")),
+            .join(".syscfg-snapshot")),
     }
 }
 
